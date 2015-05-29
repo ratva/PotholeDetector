@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Pothole Detector</string>
+
+    <string name="SpeedometerLabel">Speed:</string>
+    <string name="Speed">- m/s</string>
+    <string name="Title">Accelerometer</string>
+    <string name="xAccel">X: 0.00 m/s^2</string>
+    <string name="yAccel">Y: 0.00 m/s^2</string>
+    <string name="zAccel">Z: 0.00 m/s^2</string>
+    <string name="action_settings">Settings</string>
+</resources>
