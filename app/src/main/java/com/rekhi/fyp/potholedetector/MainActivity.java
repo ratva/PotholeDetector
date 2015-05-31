@@ -277,6 +277,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 Log.i(LOG_TAG, "Email Button Clicked");
 
                 File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
+
+                // Check if there is a file to email
                 if(PotholeCSV.exists()){
                 emailCSV();
                 }
