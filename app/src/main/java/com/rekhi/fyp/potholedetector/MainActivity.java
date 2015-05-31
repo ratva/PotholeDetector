@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,13 +47,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     TextView xText;
     TextView yText;
     TextView zText;
+    public static EditText TriggerInput;
 
-    int MaxArraySize = 800;
+    int MaxArraySize = 500;
     Double myLat = 0d;
     Double myLong = 0d;
     float currentSpeed = 0;
     float compValue = 0f;
-    float triggerAccel = 10f;
+    float triggerOrig = 10f;
+    float triggerAccel = triggerOrig;
     ArrayList<Float> accelData = new ArrayList<>();
     ArrayList<Long> accelTimestamp = new ArrayList<>();
 
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         xText = (TextView) findViewById(R.id.xText);
         yText = (TextView) findViewById(R.id.yText);
         zText = (TextView) findViewById(R.id.zText);
+        TriggerInput = (EditText) findViewById(R.id.TriggerInput);
     }
 
     @Override
@@ -178,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public void saveCSV() {
         File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
 
-        Toast.makeText(MainActivity.this, "Saved" + PotholeCSV.toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, "Saved" + PotholeCSV.toString(), Toast.LENGTH_SHORT).show();
 
         try {
             writeToCsv(PotholeCSV);
@@ -261,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 Log.i(LOG_TAG, "Clear Button Clicked");
                 File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
 
-                Toast.makeText(MainActivity.this, "Cleared" + PotholeCSV.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Cleared" + PotholeCSV.toString(), Toast.LENGTH_SHORT).show();
 
                 deleteCSV(PotholeCSV);
 
@@ -289,5 +293,32 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         });
 
+        Button TriggerButton = (Button) findViewById(R.id.TriggerButton);
+
+        TriggerButton.setOnClickListener(new View.OnClickListener() {
+            // Called as soon as the button is clicked
+            @Override
+            public void onClick(View v) {
+                Log.i(LOG_TAG, "Trigger Button Clicked");
+                triggerAccel = Float.valueOf(TriggerInput.getText().toString());
+
+                Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerAccel), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        Button ResetButton = (Button) findViewById(R.id.ResetButton);
+
+        ResetButton.setOnClickListener(new View.OnClickListener() {
+            // Called as soon as the button is clicked
+            @Override
+            public void onClick(View v) {
+                Log.i(LOG_TAG, "Reset Button Clicked");
+                triggerAccel = triggerOrig;
+
+                Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerOrig), Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 }
