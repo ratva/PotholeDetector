@@ -4,8 +4,10 @@
     <string name="SpeedometerLabel">Speed:</string>
     <string name="Speed">- m/s</string>
     <string name="Title">Accelerometer</string>
-    <string name="xAccel">X: 0.00 m/s^2</string>
-    <string name="yAccel">Y: 0.00 m/s^2</string>
-    <string name="zAccel">Z: 0.00 m/s^2</string>
+    <string name="xAccel">Vertical Acceleration: -</string>
+    <string name="yAccel">Number of Readings Stored: -</string>
+    <string name="zAccel">Acceleration Readings</string>
     <string name="action_settings">Settings</string>
+    <string name="SaveButton">Save</string>
+    <string name="ClearButton">Clear File</string>
 </resources>

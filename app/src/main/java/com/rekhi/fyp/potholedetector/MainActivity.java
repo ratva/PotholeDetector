@@ -12,10 +12,21 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
+import android.text.format.Time;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
 
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayDeque;
 
 
@@ -27,31 +38,43 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     // intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
     // intent.putExtra(Intent.EXTRA_TEXT, "I'm email body.");
 
+
     Sensor accelerometer;
     SensorManager sensorManager;
     TextView xText;
     TextView yText;
     TextView zText;
 
-    ArrayDeque accelData = new ArrayDeque();
+    Integer MaxArraySize = 20;
+    Double myLat = 0d;
+    Double myLong = 0d;
+    float currentSpeed = 0;
+    ArrayDeque<Float> accelData = new ArrayDeque<>();
+    ArrayDeque<Long> accelTimestamp = new ArrayDeque<>();
+
+
+    public static final String LOG_TAG = "Pothole Detector";
+    private static final String COMMA_SEPARATOR = ",";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        onButtonClick();
+
         LocationManager lm = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
         this.onLocationChanged(null);
 
-        sensorManager=(SensorManager)getSystemService(SENSOR_SERVICE);
-        accelerometer=sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
 
-        xText=(TextView)findViewById(R.id.xText);
-        yText=(TextView)findViewById(R.id.yText);
-        zText=(TextView)findViewById(R.id.zText);
+        xText = (TextView) findViewById(R.id.xText);
+        yText = (TextView) findViewById(R.id.yText);
+        zText = (TextView) findViewById(R.id.zText);
     }
 
     @Override
@@ -79,12 +102,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onLocationChanged(Location location) {
         TextView Speed = (TextView) this.findViewById(R.id.Speed);
-        if(location==null){
+        if (location == null) {
             Speed.setText("-.- m/s");
-        }
-        else{
-            float CurrentSpeed = location.getSpeed();
-            Speed.setText( String.format("%.2f m/s", CurrentSpeed) );
+        } else {
+            currentSpeed = location.getSpeed();
+            Speed.setText(String.format("%.2f m/s", currentSpeed));
+            myLat = location.getLatitude();
+            myLong = location.getLongitude();
         }
     }
 
@@ -106,27 +130,116 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        // Send Z axis data to a Array Deque
-        accelData.add(sensorEvent.values[2]);
+        // Send Y axis data to a Array Deque, and Timestamps. X=[0],Y=[1],Z=[2]
+        accelData.add(sensorEvent.values[1]);
+        accelTimestamp.add(sensorEvent.timestamp);
+
+        // Use HTML in order to get superscript in TextView
+        xText.setText(Html.fromHtml("Vertical Acceleration: " + sensorEvent.values[1] + " ms<sup><small>-2</small></sup>"));
 
         int accelSize = accelData.size();
-        // Use HTML in order to get superscript in TextView
-        //xText.setText(Html.fromHtml(sensorEvent.values[0]+" ms<sup><small>-2</small></sup>"));
-        xText.setText(String.valueOf(accelSize));
-        yText.setText(Html.fromHtml(sensorEvent.values[1]+" ms<sup><small>-2</small></sup>"));
+        yText.setText("Number of Readings Stored: " + String.valueOf(accelSize));
 
+       /* int triggerElem = 3*accelSize/10;
+
+
+
+        Float hello = accelData.element(triggerElem);
+
+
+
+       */
         // Output full Array Deque to a scrollview (set up in layout file)
         zText.setText(accelData.toString());
+
         // Send single (latest) accelerometer reading via the Array Deque (which keeps compiling)
         // zText.setText(accelData.getLast().toString());
 
-        if (accelData.size() > 20) {
-            accelData.remove(1);
+        // Removes elements from Array Deque once it reaches max size.
+        if (accelData.size() >= MaxArraySize) {
+            accelData.removeFirst();
+            accelTimestamp.removeFirst();
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    public void writeToCsv(File file) throws IOException {
+        // Write and append to a .csv file
+        BufferedWriter accelBuffer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true)));
+
+        // write data
+        for (Float d : accelData) {
+            accelBuffer.write(d.toString());
+            accelBuffer.write(COMMA_SEPARATOR);
+        }
+        accelBuffer.newLine();
+
+        for (Long t : accelTimestamp) {
+            accelBuffer.write(t.toString());
+            accelBuffer.write(COMMA_SEPARATOR);
+        }
+        accelBuffer.newLine();
+        accelBuffer.write(myLat.toString());
+        accelBuffer.write(COMMA_SEPARATOR);
+        accelBuffer.write(myLong.toString());
+        accelBuffer.write(COMMA_SEPARATOR);
+        accelBuffer.newLine();
+        accelBuffer.write(Float.toString(currentSpeed));
+        accelBuffer.write(COMMA_SEPARATOR);
+        accelBuffer.newLine();
+
+        accelBuffer.close();
+    }
+
+    public void deleteCSV(File file) {
+        // Get path for the file on external storage.  If external
+        // storage is not currently mounted this will fail.
+
+        if (file != null) {
+            file.delete();
+        }
+    }
+
+
+    public void onButtonClick() {
+        Button SaveButton = (Button) findViewById(R.id.SaveButton);
+
+        SaveButton.setOnClickListener(new View.OnClickListener() {
+            // Called as soon as the button is clicked
+            @Override
+            public void onClick(View v) {
+                Log.i(LOG_TAG, "Save Button Clicked");
+                File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
+
+                Toast.makeText(MainActivity.this, "Saved"+ PotholeCSV.toString(), Toast.LENGTH_LONG).show();
+
+                try {
+                    writeToCsv(PotholeCSV);
+                } catch (IOException e) {
+                    Log.e(LOG_TAG, "Failed to write to file.", e);
+                }
+            }
+        });
+
+        Button ClearButton = (Button) findViewById(R.id.ClearButton);
+
+       ClearButton.setOnClickListener(new View.OnClickListener() {
+            // Called as soon as the button is clicked
+            @Override
+            public void onClick(View v) {
+                Log.i(LOG_TAG, "Clear Button Clicked");
+                File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
+
+                Toast.makeText(MainActivity.this, "Cleared" + PotholeCSV.toString(), Toast.LENGTH_LONG).show();
+
+                deleteCSV(PotholeCSV);
+
+            }
+        });
 
     }
 }
