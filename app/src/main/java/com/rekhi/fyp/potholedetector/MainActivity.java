@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements LocationListener, SensorEventListener {
@@ -45,12 +46,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     TextView yText;
     TextView zText;
 
-    Integer MaxArraySize = 20;
+    int MaxArraySize = 20;
     Double myLat = 0d;
     Double myLong = 0d;
     float currentSpeed = 0;
-    ArrayDeque<Float> accelData = new ArrayDeque<>();
-    ArrayDeque<Long> accelTimestamp = new ArrayDeque<>();
+    float compValue =0f;
+    ArrayList<Float> accelData = new ArrayList<>();
+    ArrayList<Long> accelTimestamp = new ArrayList<>();
 
 
     public static final String LOG_TAG = "Pothole Detector";
@@ -130,41 +132,52 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        // Send Y axis data to a Array Deque, and Timestamps. X=[0],Y=[1],Z=[2]
+        // Send Y axis data to a Array List, and Timestamps. X=[0],Y=[1],Z=[2]
         accelData.add(sensorEvent.values[1]);
         accelTimestamp.add(sensorEvent.timestamp);
 
         // Use HTML in order to get superscript in TextView
+        // Show latest accelerometer reading
         xText.setText(Html.fromHtml("Vertical Acceleration: " + sensorEvent.values[1] + " ms<sup><small>-2</small></sup>"));
 
+        // Track a value (CompareElem) to compare to the trigger quantity
         int accelSize = accelData.size();
-        yText.setText("Number of Readings Stored: " + String.valueOf(accelSize));
+        int compElem = 3 * MaxArraySize / 10;
+        if (accelSize > compElem + 1) {
+            compValue = accelData.get(compElem);
+        }
 
-       /* int triggerElem = 3*accelSize/10;
-
-
-
-        Float hello = accelData.element(triggerElem);
-
+        yText.setText("Number of Readings Stored: " + String.valueOf(accelSize) + " Compare:" + String.valueOf(compValue));
 
 
-       */
-        // Output full Array Deque to a scrollview (set up in layout file)
+        // Output full Array List to a scrollview (set up in layout file)
         zText.setText(accelData.toString());
 
-        // Send single (latest) accelerometer reading via the Array Deque (which keeps compiling)
+        // Send single (latest) accelerometer reading via the Array List (which keeps compiling)
         // zText.setText(accelData.getLast().toString());
 
-        // Removes elements from Array Deque once it reaches max size.
+        // Removes elements from Array List once it reaches max size.
         if (accelData.size() >= MaxArraySize) {
-            accelData.removeFirst();
-            accelTimestamp.removeFirst();
+            accelData.remove(0);
+            accelTimestamp.remove(0);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
+    }
+
+    public void saveCSV() {
+        File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
+
+        Toast.makeText(MainActivity.this, "Saved" + PotholeCSV.toString(), Toast.LENGTH_LONG).show();
+
+        try {
+            writeToCsv(PotholeCSV);
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Failed to write to file.", e);
+        }
     }
 
     public void writeToCsv(File file) throws IOException {
@@ -213,21 +226,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             @Override
             public void onClick(View v) {
                 Log.i(LOG_TAG, "Save Button Clicked");
-                File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
-
-                Toast.makeText(MainActivity.this, "Saved"+ PotholeCSV.toString(), Toast.LENGTH_LONG).show();
-
-                try {
-                    writeToCsv(PotholeCSV);
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "Failed to write to file.", e);
-                }
+                saveCSV();
             }
         });
 
         Button ClearButton = (Button) findViewById(R.id.ClearButton);
 
-       ClearButton.setOnClickListener(new View.OnClickListener() {
+        ClearButton.setOnClickListener(new View.OnClickListener() {
             // Called as soon as the button is clicked
             @Override
             public void onClick(View v) {
