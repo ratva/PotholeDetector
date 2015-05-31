@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             compValue = accelData.get(compElem);
         }
 
-        yText.setText("Number of Readings Stored: " + String.valueOf(accelSize) + " Compare:" + String.valueOf(compValue));
+        yText.setText("Number of Readings Stored: " + String.valueOf(accelSize));
 
 
         // Output full Array List to a scrollview (set up in layout file)

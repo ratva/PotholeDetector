@@ -35,8 +35,7 @@
         android:text="@string/Title"
         android:id="@+id/Title"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="12dp" />
+        android:layout_centerHorizontal="true" />
 
     <ScrollView
         android:layout_width="wrap_content"
@@ -49,7 +48,7 @@
         android:layout_alignParentStart="true"
         android:layout_above="@+id/LabelSpeedometer"
         android:layout_marginBottom="15dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="12dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -65,7 +64,7 @@
         android:text="@string/SpeedometerLabel"
         android:id="@+id/LabelSpeedometer"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="8dp"
         android:layout_above="@+id/Speed"
         android:layout_centerHorizontal="true" />
 
@@ -75,7 +74,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/Speed"
         android:id="@+id/Speed"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="15dp"
         android:layout_above="@+id/linearLayout"
         android:layout_centerHorizontal="true" />
 
@@ -90,16 +89,24 @@
         android:weightSum="1">
 
         <Button
-            android:layout_width="175dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/SaveButton"
-            android:id="@+id/SaveButton" />
+            android:id="@+id/SaveButton"
+            android:layout_weight="0.33" />
         <Button
-            android:layout_width="175dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ClearButton"
-            android:id="@+id/ClearButton" />
+            android:id="@+id/ClearButton"
+            android:layout_weight="0.33" />
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/EmailButton"
+            android:id="@+id/EmailButton"
+            android:layout_weight="0.33" />
 
 
     </LinearLayout>
