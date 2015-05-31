@@ -50,7 +50,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     Double myLat = 0d;
     Double myLong = 0d;
     float currentSpeed = 0;
-    float compValue =0f;
+    float compValue = 0f;
+    float triggerAccel = 10f;
     ArrayList<Float> accelData = new ArrayList<>();
     ArrayList<Long> accelTimestamp = new ArrayList<>();
 
@@ -161,6 +162,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             accelData.remove(0);
             accelTimestamp.remove(0);
         }
+
+        // Check for trigger
+        if(Math.abs(compValue) >= triggerAccel){
+            saveCSV();
+        }
     }
 
     @Override
@@ -203,6 +209,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         accelBuffer.newLine();
         accelBuffer.write(Float.toString(currentSpeed));
         accelBuffer.write(COMMA_SEPARATOR);
+        accelBuffer.newLine();
         accelBuffer.newLine();
 
         accelBuffer.close();
