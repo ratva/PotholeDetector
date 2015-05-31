@@ -9,6 +9,7 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     TextView yText;
     TextView zText;
 
-    int MaxArraySize = 20;
+    int MaxArraySize = 800;
     Double myLat = 0d;
     Double myLong = 0d;
     float currentSpeed = 0;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
 
         xText = (TextView) findViewById(R.id.xText);
         yText = (TextView) findViewById(R.id.yText);
@@ -164,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         // Check for trigger
-        if(Math.abs(compValue) >= triggerAccel){
+        if (Math.abs(compValue) >= triggerAccel) {
             saveCSV();
         }
     }
@@ -224,6 +225,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
     }
 
+    public void emailCSV() {
+        File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
+        //String filelocation = "/mnt/sdcard/contacts_sid.vcf";
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        // set the type to 'email'
+        emailIntent.setType("vnd.android.cursor.dir/email");
+        String to[] = {"avtarrekhi@gmail.com"};
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
+        // the attachment
+        emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + PotholeCSV.getAbsolutePath()));
+        // the mail subject
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Pothole Readings");
+        startActivity(Intent.createChooser(emailIntent, "Send email..."));
+    }
 
     public void onButtonClick() {
         Button SaveButton = (Button) findViewById(R.id.SaveButton);
@@ -250,6 +265,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                 deleteCSV(PotholeCSV);
 
+            }
+        });
+
+        Button EmailButton = (Button) findViewById(R.id.EmailButton);
+
+        EmailButton.setOnClickListener(new View.OnClickListener() {
+            // Called as soon as the button is clicked
+            @Override
+            public void onClick(View v) {
+                Log.i(LOG_TAG, "Email Button Clicked");
+
+                File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
+                if(PotholeCSV.exists()){
+                emailCSV();
+                }
+                    else{
+                        Log.i(LOG_TAG, "No file to send");
+                        Toast.makeText(MainActivity.this, "There is no data file to email", Toast.LENGTH_LONG).show();
+                    }
             }
         });
 
