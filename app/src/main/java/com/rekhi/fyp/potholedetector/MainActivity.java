@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -326,6 +327,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     if(inputTrigger>=1f){
                         triggerAccel = inputTrigger;
                         Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerAccel), Toast.LENGTH_SHORT).show();
+                        InputMethodManager inputManager = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                        inputManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     }
                     else{
                         TriggerInput.setError("Enter a value greater than 1.0");
@@ -344,6 +349,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             public void onClick(View v) {
                 Log.i(LOG_TAG, "Reset Button Clicked");
                 triggerAccel = triggerOrig;
+
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
                 Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerOrig), Toast.LENGTH_SHORT).show();
 
