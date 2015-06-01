@@ -35,12 +35,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements LocationListener, SensorEventListener {
 
 
-    // android.content.Intent.ACTION_SENDTO (new Intent(Intent.ACTION_SENDTO);)
-    // intent.putExtra(Intent.EXTRA_EMAIL, "emailaddress@emailaddress.com");
-    // intent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
-    // intent.putExtra(Intent.EXTRA_TEXT, "I'm email body.");
-
-
     Sensor accelerometer;
     SensorManager sensorManager;
     TextView xText;
@@ -234,8 +228,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         // storage is not currently mounted this will fail.
 
         if (file != null) {
-            file.delete();
-            Toast.makeText(MainActivity.this, "Cleared " + file.toString(), Toast.LENGTH_SHORT).show();
+            boolean deleted = file.delete();
+            if (deleted) {
+                Toast.makeText(MainActivity.this, "Cleared " + file.toString(), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
