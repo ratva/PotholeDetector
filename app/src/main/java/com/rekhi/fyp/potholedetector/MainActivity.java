@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     float triggerAccel = triggerOrig;
     ArrayList<Float> accelData = new ArrayList<>();
     ArrayList<Long> accelTimestamp = new ArrayList<>();
+    ArrayList<Float> SpeedArray = new ArrayList<>();
 
 
     public static final String LOG_TAG = "Pothole Detector";
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         // Send Y axis data to a Array List, and Timestamps. X=[0],Y=[1],Z=[2]
         accelData.add(sensorEvent.values[1]);
         accelTimestamp.add(sensorEvent.timestamp);
+        SpeedArray.add(currentSpeed);
 
         // Use HTML in order to get superscript in TextView
         // Show latest accelerometer reading
@@ -163,6 +165,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (accelData.size() >= MaxArraySize) {
             accelData.remove(0);
             accelTimestamp.remove(0);
+            SpeedArray.remove(0);
         }
 
         // Check for trigger
@@ -204,20 +207,30 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             accelBuffer.write(COMMA_SEPARATOR);
         }
 
+        accelBuffer.newLine();
+
+        for (Float s : SpeedArray) {
+            accelBuffer.write(s.toString());
+            accelBuffer.write(COMMA_SEPARATOR);
+        }
+        accelBuffer.newLine();
+
+
         // Clear Array Lists so that duplicate readings aren't recorded
         accelData.clear();
         accelTimestamp.clear();
+        SpeedArray.clear();
         // To ensure that array can repopulate again.
         accelData.trimToSize();
 
-        accelBuffer.newLine();
         accelBuffer.write(myLat.toString());
         accelBuffer.write(COMMA_SEPARATOR);
         accelBuffer.write(myLong.toString());
         accelBuffer.write(COMMA_SEPARATOR);
-        accelBuffer.newLine();
+      /*  accelBuffer.newLine();
         accelBuffer.write(Float.toString(currentSpeed));
         accelBuffer.write(COMMA_SEPARATOR);
+      */
         accelBuffer.newLine();
         accelBuffer.newLine();
 
