@@ -13,7 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
-import android.text.format.Time;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 
@@ -152,6 +151,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (accelSize > compElem + 1) {
             compValue = accelData.get(compElem);
         }
+        else {
+            compValue = 0f;
+        }
 
         yText.setText("Number of Readings Stored: " + String.valueOf(accelSize));
 
@@ -182,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public void saveCSV() {
         File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
 
-        Toast.makeText(MainActivity.this, "Saved" + PotholeCSV.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Saved " + PotholeCSV.toString(), Toast.LENGTH_SHORT).show();
 
         try {
             writeToCsv(PotholeCSV);
@@ -206,6 +208,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             accelBuffer.write(t.toString());
             accelBuffer.write(COMMA_SEPARATOR);
         }
+
+        // Clear Array Lists so that duplicate readings aren't recorded
+        accelData.clear();
+        accelTimestamp.clear();
+        // To ensure that array can repopulate again.
+        accelData.trimToSize();
+
         accelBuffer.newLine();
         accelBuffer.write(myLat.toString());
         accelBuffer.write(COMMA_SEPARATOR);
@@ -226,12 +235,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (file != null) {
             file.delete();
+            Toast.makeText(MainActivity.this, "Cleared " + file.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
     public void emailCSV() {
         File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
-        //String filelocation = "/mnt/sdcard/contacts_sid.vcf";
+
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         // set the type to 'email'
         emailIntent.setType("vnd.android.cursor.dir/email");
@@ -265,9 +275,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 Log.i(LOG_TAG, "Clear Button Clicked");
                 File PotholeCSV = new File(getExternalFilesDir(null), "Potholes.csv");
 
-                Toast.makeText(MainActivity.this, "Cleared" + PotholeCSV.toString(), Toast.LENGTH_SHORT).show();
+                // Check if there is a file to clear
+                if(PotholeCSV.exists()){
+                    deleteCSV(PotholeCSV);
+                }
+                else{
+                    Log.i(LOG_TAG, "No file to clear");
+                    Toast.makeText(MainActivity.this, "There is already no file", Toast.LENGTH_LONG).show();
+                }
 
-                deleteCSV(PotholeCSV);
+
+
 
             }
         });
@@ -284,12 +302,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                 // Check if there is a file to email
                 if(PotholeCSV.exists()){
-                emailCSV();
+                    emailCSV();
                 }
-                    else{
-                        Log.i(LOG_TAG, "No file to send");
-                        Toast.makeText(MainActivity.this, "There is no data file to email", Toast.LENGTH_LONG).show();
-                    }
+                else{
+                    Log.i(LOG_TAG, "No file to send");
+                    Toast.makeText(MainActivity.this, "There is no data file to email", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -300,9 +318,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             @Override
             public void onClick(View v) {
                 Log.i(LOG_TAG, "Trigger Button Clicked");
-                triggerAccel = Float.valueOf(TriggerInput.getText().toString());
 
-                Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerAccel), Toast.LENGTH_SHORT).show();
+                String strTriggerInput = TriggerInput.getText().toString();
+
+                if(TextUtils.isEmpty(strTriggerInput)) {
+                    TriggerInput.setError("Enter a value greater than 1.0");
+                }
+                else{
+
+                    float inputTrigger = Float.valueOf(strTriggerInput);
+                    if(inputTrigger>=1f){
+                        triggerAccel = inputTrigger;
+                        Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerAccel), Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        TriggerInput.setError("Enter a value greater than 1.0");
+                        Toast.makeText(MainActivity.this, "Trigger must be greater than 1.0", Toast.LENGTH_SHORT).show();
+                    }
+                }
 
             }
         });
