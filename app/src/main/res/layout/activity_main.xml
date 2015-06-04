@@ -33,20 +33,20 @@
         android:layout_marginTop="2dp">
 
         <Button
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/TriggerButton"
             android:id="@+id/TriggerButton"
-            android:layout_weight=".5" />
+            android:layout_weight=".5"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
-            style="?android:attr/buttonStyleSmall"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/ResetTriggerButton"
             android:id="@+id/ResetButton"
-            android:layout_weight=".5" />
+            android:layout_weight=".5"
+            style="?android:attr/buttonBarButtonStyle"/>
 
     </LinearLayout>
 
@@ -128,20 +128,23 @@
             android:layout_height="wrap_content"
             android:text="@string/SaveButton"
             android:id="@+id/SaveButton"
-            android:layout_weight="0.33" />
+            android:layout_weight="0.33"
+            style="?android:attr/buttonBarButtonStyle"/>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/ClearButton"
             android:id="@+id/ClearButton"
-            android:layout_weight="0.33" />
+            android:layout_weight="0.33"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/EmailButton"
             android:id="@+id/EmailButton"
-            android:layout_weight="0.33" />
+            android:layout_weight="0.33"
+            style="?android:attr/buttonBarButtonStyle"/>
 
 
     </LinearLayout>
