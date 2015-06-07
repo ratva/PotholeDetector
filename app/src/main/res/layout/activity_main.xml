@@ -48,6 +48,15 @@
             android:layout_weight=".5"
             style="?android:attr/buttonBarButtonStyle"/>
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/EndButton"
+            android:id="@+id/EndButton"
+            android:layout_weight=".5"
+            style="?android:attr/buttonBarButtonStyle"/>
+
+
     </LinearLayout>
 
     <TextView

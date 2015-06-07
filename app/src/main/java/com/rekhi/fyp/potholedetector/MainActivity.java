@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
 
+
         xText = (TextView) findViewById(R.id.xText);
         yText = (TextView) findViewById(R.id.yText);
         zText = (TextView) findViewById(R.id.zText);
@@ -108,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public void onLocationChanged(Location location) {
         TextView Speed = (TextView) this.findViewById(R.id.Speed);
         if (location == null) {
-            Speed.setText("-.- m/s");
+            Speed.setText("Waiting for GPS");
         } else {
             currentSpeed = location.getSpeed();
             Speed.setText(String.format("%.2f m/s", currentSpeed));
@@ -376,6 +377,31 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 //Toast
                 Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerOrig), Toast.LENGTH_SHORT).show();
 
+            }
+        });
+
+        Button EndButton = (Button) findViewById(R.id.EndButton);
+
+        EndButton.setOnClickListener(new View.OnClickListener() {
+            // Called as soon as the button is clicked
+            @Override
+            public void onClick(View v) {
+                Log.i(LOG_TAG, "End Button Clicked");
+
+                //Hide Keyboard
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                inputManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+                //Toast
+                Toast.makeText(MainActivity.this, "Stopped Monitoring", Toast.LENGTH_SHORT).show();
+
+                //Unregister listener (stop looking at sensor)
+                sensorManager.unregisterListener(MainActivity.this);
+
+                //Close activity
+                finish();
             }
         });
     }

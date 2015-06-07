@@ -13,5 +13,6 @@
     <string name="EmailButton">Email</string>
     <string name="TriggerButton">Change Trigger</string>
     <string name="ResetTriggerButton">Reset</string>
+    <string name="EndButton">Stop</string>
     <string name="TriggerInput">Adjust Trigger Acceleration</string>
 </resources>
