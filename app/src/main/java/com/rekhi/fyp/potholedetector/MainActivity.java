@@ -257,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
         // set the type to 'email'
         emailIntent.setType("vnd.android.cursor.dir/email");
-        String to[] = {"avtarrekhi@gmail.com"};
+        String to[] = {"avtarfyp@gmail.com"};
         emailIntent.putExtra(Intent.EXTRA_EMAIL, to);
         // the attachment
         emailIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + PotholeCSV.getAbsolutePath()));
@@ -295,9 +295,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     Log.i(LOG_TAG, "No file to clear");
                     Toast.makeText(MainActivity.this, "There is already no file", Toast.LENGTH_LONG).show();
                 }
-
-
-
 
             }
         });
@@ -363,13 +360,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             @Override
             public void onClick(View v) {
                 Log.i(LOG_TAG, "Reset Button Clicked");
+
+                //Restore default trigger value
                 triggerAccel = triggerOrig;
 
+                //Clear EditText
+                TriggerInput.setText("");
+
+                //Hide Keyboard
                 InputMethodManager inputManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
 
                 inputManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 
+                //Toast
                 Toast.makeText(MainActivity.this, "Trigger changed to " + Float.toString(triggerOrig), Toast.LENGTH_SHORT).show();
 
             }

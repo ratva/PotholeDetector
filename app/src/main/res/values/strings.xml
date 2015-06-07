@@ -2,7 +2,7 @@
     <string name="app_name">Pothole Detector</string>
 
     <string name="SpeedometerLabel">Speed:</string>
-    <string name="Speed">- m/s</string>
+    <string name="Speed">Waiting for GPS</string>
     <string name="Title">Accelerometer</string>
     <string name="xAccel">Vertical Acceleration: -</string>
     <string name="yAccel">Number of Readings Stored: -</string>
