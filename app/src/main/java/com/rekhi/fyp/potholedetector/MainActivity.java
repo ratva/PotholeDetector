@@ -44,12 +44,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     TextView zText;
     public static EditText TriggerInput;
 
-    int MaxArraySize = 500;
+    int MaxArraySize = 250;
     Double myLat = 0d;
     Double myLong = 0d;
     float currentSpeed = 0;
     float compValue = 0f;
-    float triggerOrig = 10f;
+    float triggerOrig = 8f;
     float triggerAccel = triggerOrig;
     ArrayList<Float> accelData = new ArrayList<>();
     ArrayList<Long> accelTimestamp = new ArrayList<>();
@@ -156,8 +156,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             compValue = 0f;
         }
 
-        yText.setText("Number of Readings Stored: " + String.valueOf(accelSize));
-
+        // Output size of array
+        yText.setText("Readings Stored: " + String.valueOf(accelSize));
 
         // Output full Array List to a scrollview (set up in layout file)
         zText.setText(accelData.toString());
@@ -199,13 +199,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         // Write and append to a .csv file
         BufferedWriter accelBuffer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file, true)));
 
-        // write data
+        // Write acceleration data
         for (Float d : accelData) {
             accelBuffer.write(d.toString());
             accelBuffer.write(COMMA_SEPARATOR);
         }
         accelBuffer.newLine();
 
+        // Write timestamps
         for (Long t : accelTimestamp) {
             accelBuffer.write(t.toString());
             accelBuffer.write(COMMA_SEPARATOR);
