@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -332,7 +333,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 String strTriggerInput = TriggerInput.getText().toString();
 
                 if(TextUtils.isEmpty(strTriggerInput)) {
-                    TriggerInput.setError("Enter a value greater than 1.0");
+                    //TriggerInput.setError("Enter a value greater than 1.0");
+                    Toast toast = Toast.makeText(MainActivity.this, "Trigger must be greater than 1.0", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
                 else{
 
@@ -346,8 +350,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         inputManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                     }
                     else{
-                        TriggerInput.setError("Enter a value greater than 1.0");
-                        Toast.makeText(MainActivity.this, "Trigger must be greater than 1.0", Toast.LENGTH_SHORT).show();
+                      //  TriggerInput.setError("Enter a value greater than 1.0");
+                        Toast toast = Toast.makeText(MainActivity.this, "Trigger must be greater than 1.0", Toast.LENGTH_SHORT);
+                        toast.setGravity(Gravity.CENTER,0,0);
+                        toast.show();
                     }
                 }
 
